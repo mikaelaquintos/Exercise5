@@ -1,0 +1,36 @@
+// Exercise 6
+//
+// Replace the recorder in Problem 5 with a multi-recorder to collect the 
+// waterheater power and the house heating/ventilation/air-conditioner (HVAC) 
+// power (hvac_load) at five minute intervals for the first week of July. 
+//
+// (a) Why is the HVAC load always zero?  
+//
+// (b) Change to the house’s thermostat so that the HVAC load is non-zero sometimes.
+
+module tape;
+module residential{
+	implicit_enduses NONE;  // implicit end-uses are driven by load shapes and these load shapes from defined in schedules
+}
+
+//Setup clock
+
+clock {
+	timezone PST+8PDT;
+	starttime '2001-01-01 00:00:00 PST';
+	stoptime '2001-01-8 00:00:00 PST';
+}
+
+object house{
+	name house1;
+	cooling_setpoint 70; // Prevent hvac_load to be non-zero
+	floor_area 1250 sf; 
+	object waterheater {
+		object tape.multi_recorder {
+		property actual_load,house1:hvac_load;	//Property name
+		file "Problem6.csv";		//Where is it saving to?
+		interval -1; 				//When does it record?
+		limit 294; 					//How much does it record?
+		};
+	};
+}
